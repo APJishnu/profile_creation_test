@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "antd";
 import styles from "./button.module.scss";
 
+/* Button component props */
 interface ButtonProps {
   label: string;
   type?: "button" | "submit" | "reset";
@@ -13,6 +14,7 @@ interface ButtonProps {
   loading?: boolean;
 }
 
+/* Reusable Button component */
 const ButtonComponent: React.FC<ButtonProps> = ({
   label,
   type = "button",

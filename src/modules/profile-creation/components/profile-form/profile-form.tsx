@@ -11,7 +11,7 @@ import ButtonComponent from "@/themes/components/button/button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-// Define validation schema
+/* Validation schema */
 const schema = yup.object().shape({
   name: yup.string().required("Name is required"),
   email: yup
@@ -25,11 +25,15 @@ const schema = yup.object().shape({
   password: yup.string().required("Password is required"),
 });
 
+/* Profile form component */
 const ProfileForm: React.FC = () => {
   const [form] = Form.useForm();
   const [password, setPassword] = useState("");
-  const router = useRouter()
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false); 
+  const router = useRouter();
 
+
+  /* React Hook Form setup */
   const {
     control,
     handleSubmit,
@@ -40,16 +44,14 @@ const ProfileForm: React.FC = () => {
     mode: "onBlur",
   });
 
+  /* Form submission handler */
   const onSubmit = (data: ProfileData) => {
     console.log("Form submitted:", data);
-    // Show success message
     message.success(`Profile successfully created for ${data.name}!`);
-
-    router.push("/profile")
-    // Reset form
+    router.push("/profile");
     reset();
     setPassword("");
-
+    setIsPasswordFocused(false); 
   };
 
   return (
@@ -58,7 +60,7 @@ const ProfileForm: React.FC = () => {
         <Image
           className={styles.profileFormImg}
           src="/profile-form/profile-form-illustration.svg"
-          alt="Profile Illustation"
+          alt="Profile Illustration"
           width={100}
           height={100}
         />
@@ -115,6 +117,7 @@ const ProfileForm: React.FC = () => {
                   {...field}
                   placeholder="Enter phone number"
                   error={errors.phone?.message}
+                  numberOnly
                 />
               )}
             />
@@ -134,12 +137,21 @@ const ProfileForm: React.FC = () => {
                   onChange={(value) => {
                     field.onChange(value);
                     setPassword(value);
+                    setIsPasswordFocused(true)
+                  }}
+                  onBlur={() => {
+                    if (!password) {
+                      setIsPasswordFocused(false);
+                    }
                   }}
                 />
               )}
             />
 
-            <PasswordCriteria password={password} />
+            
+            {/* Show Password Criteria only if field is focused or has a value */}
+            {(isPasswordFocused || password) && <PasswordCriteria password={password} />}
+
 
             <ButtonComponent
               label="Create Profile"

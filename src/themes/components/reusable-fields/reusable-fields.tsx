@@ -2,10 +2,13 @@ import React from 'react';
 import { Form, Select, Input } from 'antd';
 import styles from './reusable-fields.module.scss';
 
+/* Select component from Ant Design */
 const { Option } = Select;
 
+/* Input type definition */
 export type InputType = 'select' | 'input' | 'textarea';
 
+/* Form field component props */
 export interface FormFieldProps {
   type: InputType;
   numberOnly?: boolean;
@@ -23,6 +26,7 @@ export interface FormFieldProps {
   error?: string;
 }
 
+/* Reusable form field component */
 const FormField: React.FC<FormFieldProps> = ({
   type,
   numberOnly,
@@ -39,6 +43,7 @@ const FormField: React.FC<FormFieldProps> = ({
   suffixIcon,
   error,
 }) => {
+  /* Renders label with required indicator */
   const renderLabel = () => (
     <div className={styles.labelWrapper}>
       {label}
@@ -46,14 +51,15 @@ const FormField: React.FC<FormFieldProps> = ({
     </div>
   );
 
+  /* Handles change events */
   const handleChange = (val: any) => {
     if (onChange) {
-      // For Input/TextArea components, we need to extract the value from the event
       const actualValue = val?.target?.value ?? val;
       onChange(actualValue);
     }
   };
 
+  /* Renders different input types */
   const renderField = () => {
     switch (type) {
       case 'select':
