@@ -1,8 +1,15 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { message } from "antd";
 import userEvent from "@testing-library/user-event";
 import ProfileForm from "@/modules/profile-creation/components/profile-form/profile-form";
+
+// Mock useRouter from next/navigation
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: jest.fn(), // Mock push function
+  }),
+}));
 
 // Mock Ant Design message
 jest.mock("antd", () => ({
@@ -14,6 +21,10 @@ jest.mock("antd", () => ({
 }));
 
 describe("ProfileForm Component", () => {
+  beforeEach(() => {
+    jest.clearAllMocks(); // Clear previous mock calls before each test
+  });
+
   it("renders all input fields and button correctly", () => {
     render(<ProfileForm />);
 
@@ -27,7 +38,7 @@ describe("ProfileForm Component", () => {
   it("shows validation errors when submitting an empty form", async () => {
     render(<ProfileForm />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Create Profile" }));
+    await userEvent.click(screen.getByRole("button", { name: "Create Profile" }));
 
     await waitFor(() => {
       expect(screen.getByText("Name is required")).toBeInTheDocument();
@@ -39,11 +50,8 @@ describe("ProfileForm Component", () => {
   it("displays an error for an invalid email format", async () => {
     render(<ProfileForm />);
 
-    fireEvent.change(screen.getByPlaceholderText("Enter email"), {
-      target: { value: "invalid-email" },
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: "Create Profile" }));
+    await userEvent.type(screen.getByPlaceholderText("Enter email"), "invalid-email");
+    await userEvent.click(screen.getByRole("button", { name: "Create Profile" }));
 
     await waitFor(() => {
       expect(screen.getByText("Invalid email format")).toBeInTheDocument();
@@ -54,7 +62,7 @@ describe("ProfileForm Component", () => {
     render(<ProfileForm />);
 
     const passwordInput = screen.getByPlaceholderText("Enter password");
-    userEvent.type(passwordInput, "Test@123");
+    await userEvent.type(passwordInput, "Test@123");
 
     await waitFor(() => {
       expect(passwordInput).toHaveValue("Test@123");
@@ -64,25 +72,15 @@ describe("ProfileForm Component", () => {
   it("submits the form successfully with valid data", async () => {
     render(<ProfileForm />);
 
-    fireEvent.change(screen.getByPlaceholderText("Enter your name"), {
-      target: { value: "John Doe" },
-    });
+    await userEvent.type(screen.getByPlaceholderText("Enter your name"), "John Doe");
+    await userEvent.type(screen.getByPlaceholderText("Enter email"), "johndoe@example.com");
+    await userEvent.type(screen.getByPlaceholderText("Enter phone number"), "1234567890");
+    await userEvent.type(screen.getByPlaceholderText("Enter password"), "SecurePass123!");
 
-    fireEvent.change(screen.getByPlaceholderText("Enter email"), {
-      target: { value: "johndoe@example.com" },
-    });
-
-    fireEvent.change(screen.getByPlaceholderText("Enter phone number"), {
-      target: { value: "1234567890" },
-    });
-
-    fireEvent.change(screen.getByPlaceholderText("Enter password"), {
-      target: { value: "SecurePass123!" },
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: "Create Profile" }));
+    await userEvent.click(screen.getByRole("button", { name: "Create Profile" }));
 
     await waitFor(() => {
+      expect(message.success).toHaveBeenCalledTimes(1);
       expect(message.success).toHaveBeenCalledWith(
         "Profile successfully created for John Doe!"
       );
