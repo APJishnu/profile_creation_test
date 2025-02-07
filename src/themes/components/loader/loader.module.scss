@@ -1,0 +1,32 @@
+.loaderBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(231, 231, 231); /* Semi-transparent background */
+    backdrop-filter: blur(5px); /* Apply blur effect */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Ensure it's on top */
+  }
+  
+  .loaderContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .spinLoader {
+    color: #1890ff; /* Blue theme */
+  }
+  
+  .loaderText {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #1890ff;
+    font-weight: bold;
+  }
+  
